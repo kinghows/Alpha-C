@@ -5,6 +5,8 @@ AI采用腾讯：[腾讯API](http://ai.qq.com/)
 
 python 版本：Python 3.7.4rc2
 
+执行：Alpha-C.exe
+
 开发安装：
 
 wxPython:
