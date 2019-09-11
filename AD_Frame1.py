@@ -309,7 +309,6 @@ class Frame1(wx.Frame):
         self.textInput.Clear();
         if use_voice:
             audiopath = os.getcwd()
-            print(audiopath);
             t_voice = TencentVoice(answer,audio_path=audiopath,sound_choice= self.sound_choice,sound_speed=-1);
             t_voice.run();
             if not t_voice.msg == "ok":
