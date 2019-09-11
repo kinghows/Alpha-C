@@ -74,6 +74,7 @@ class TencentVoice(BaseClass):
         self.params['model_type'] = sound_choice;  # 语音 0~2。0：女。1：女英文。2：男
         self.params['speed'] = sound_speed;  # 语速 -2:0.6倍，-1:0.8倍, 0：正常， 1:1.2倍，2:1.5倍
         self.msg = 'ok'
+        self.file_name = 'err'
 
     def deal_text(self):
         if len(self.TEXT.encode("utf-8")) > 300:
@@ -95,21 +96,17 @@ class TencentVoice(BaseClass):
         res = json.loads(self.result.read().decode("utf-8"));
         if not res["msg"] == "ok":
             self.msg = "语音合成出错："+res["msg"];
+            self.file_name = 'err'
         else:
             voice_data = base64.decodestring(bytes(res["data"]["voice"].encode("utf-8")));
-            file_name = str(time.time())
             if voice_data:
-                print(self.audio_path+"\\" + file_name + ".mp3");
-                with open(self.audio_path+"\\" + file_name + ".mp3", "wb") as f:
+                self.file_name = self.audio_path+"\\" + str(time.time()) + ".mp3";
+                with open(self.file_name, "wb") as f:
                     f.write(voice_data);
 
-    def play_audio(self, file_dir, sleep_time, is_delete=False):
-        for file in os.listdir(file_dir):
-            os.system(file_dir+"\\"+file);
-            time.sleep(sleep_time);
-        if is_delete:
-            for file in os.listdir(file_dir):
-                os.remove(file_dir+"\\"+file);
+    def play_audio(self):
+        if not self.file_name =='err':
+            os.system(self.file_name);
 
     def run(self):
         self.deal_text();
@@ -311,12 +308,13 @@ class Frame1(wx.Frame):
         self.textReturn.AppendText('智能闲聊：'+answer+'\n');	
         self.textInput.Clear();
         if use_voice:
-            audiopath = 'E:\Github\Alpha-C\Audio'
+            audiopath = os.getcwd()
+            print(audiopath);
             t_voice = TencentVoice(answer,audio_path=audiopath,sound_choice= self.sound_choice,sound_speed=-1);
             t_voice.run();
             if not t_voice.msg == "ok":
                 self.textReturn.AppendText(t_voice.msg+'\n');
             else:
-                t_voice.play_audio(audiopath,0,is_delete=False);
+                t_voice.play_audio();
 
         event.Skip()
